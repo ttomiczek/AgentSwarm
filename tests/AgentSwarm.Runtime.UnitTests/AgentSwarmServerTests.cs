@@ -3,7 +3,7 @@ namespace AgentSwarm.Runtime.UnitTests;
 public class AgentSwarmServerTests
 {
     [Fact]
-    public void Initialize_FindsAgentFoldersByGuidName()
+    public void FindAgentFolders_DiscoversOnlyGuidFolders()
     {
         var root = Path.Combine(Path.GetTempPath(), "agents-test-" + Guid.NewGuid());
         Directory.CreateDirectory(root);
@@ -15,17 +15,15 @@ public class AgentSwarmServerTests
         Directory.CreateDirectory(agent2);
         Directory.CreateDirectory(notAgent);
 
-        File.WriteAllText(Path.Combine(agent1, "agent.json"), """{"provider":"openai","base_url":"https://api.test.com","api_key":"test","model":"test"}""");
-        File.WriteAllText(Path.Combine(agent2, "agent.json"), """{"provider":"openai","base_url":"https://api.test.com","api_key":"test","model":"test"}""");
-        File.WriteAllText(Path.Combine(agent1, "telegram.json"), """{"bot_token":"test-token"}""");
-        File.WriteAllText(Path.Combine(agent2, "telegram.json"), """{"bot_token":"test-token"}""");
-
         try
         {
             var server = AgentSwarmServer.Create(root);
-            server.Initialize();
+            server.Discover();
 
-            Assert.Equal(2, server.Runtimes.Count);
+            Assert.Equal(2, server.AgentFolders.Count);
+            Assert.Contains(agent1, server.AgentFolders);
+            Assert.Contains(agent2, server.AgentFolders);
+            Assert.DoesNotContain(notAgent, server.AgentFolders);
         }
         finally
         {

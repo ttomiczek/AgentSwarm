@@ -6,8 +6,10 @@ public class AgentSwarmServer
 {
     private readonly string _rootPath;
     private readonly List<IAgentRuntime> _runtimes = new();
+    private List<string>? _agentFolders;
 
     public IReadOnlyList<IAgentRuntime> Runtimes => _runtimes.AsReadOnly();
+    public IReadOnlyList<string> AgentFolders => _agentFolders?.AsReadOnly() ?? [];
 
     private AgentSwarmServer(string rootPath)
     {
@@ -16,10 +18,15 @@ public class AgentSwarmServer
 
     public static AgentSwarmServer Create(string rootPath) => new(rootPath);
 
+    public void Discover()
+    {
+        _agentFolders = FindAgentFolders(_rootPath).ToList();
+    }
+
     public void Initialize()
     {
-        var agentFolders = FindAgentFolders(_rootPath);
-        foreach (var folder in agentFolders)
+        _agentFolders = FindAgentFolders(_rootPath).ToList();
+        foreach (var folder in _agentFolders)
         {
             var runtime = new AgentRuntime(folder);
             _runtimes.Add(runtime);
