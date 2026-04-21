@@ -30,14 +30,7 @@ public class AgentSwarmServer
         _agentFolders = FindAgentFolders(_rootPath).ToList();
         foreach (var folder in _agentFolders)
         {
-            var config = new ConfigScanner().Scan(folder);
-            var llm = new OpenAiLlmProvider(new HttpClient(), new LlmConfig(
-                config.Agent!.Provider,
-                config.Agent.BaseUrl,
-                config.Agent.ApiKey,
-                config.Agent.Model));
-            var tools = new ToolExecutor();
-            var runtime = new AgentRuntime(llm, tools, config.Role?.Content ?? "");
+            var runtime = new AgentRuntime(folder);
             _runtimes.Add(runtime);
         }
     }

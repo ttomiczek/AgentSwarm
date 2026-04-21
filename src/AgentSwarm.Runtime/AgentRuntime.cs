@@ -17,12 +17,17 @@ public class AgentRuntime : IAgentRuntime
 
     public (AgentState State, DateTime Timestamp, string Text) Status => _status;
 
-    public AgentRuntime(ILlmProvider llm, IToolExecutor tools, string systemPrompt)
+    public AgentRuntime(string agentFolder)
     {
-        _llm = llm;
-        _tools = tools;
+        var config = new ConfigScanner().Scan(agentFolder);
+        _llm = new OpenAiLlmProvider(new HttpClient(), new LlmConfig(
+            config.Agent!.Provider,
+            config.Agent.BaseUrl,
+            config.Agent.ApiKey,
+            config.Agent.Model));
+        _tools = new ToolExecutor();
         _queue = new LockedQueue<string>();
-        _systemPrompt = systemPrompt;
+        _systemPrompt = config.Role?.Content ?? "";
     }
 
     public void EnqueueUserInput(string input)
