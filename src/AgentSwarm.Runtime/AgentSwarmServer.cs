@@ -7,6 +7,8 @@ public class AgentSwarmServer
     private readonly string _rootPath;
     private readonly List<IAgentRuntime> _runtimes = new();
 
+    public IReadOnlyList<IAgentRuntime> Runtimes => _runtimes.AsReadOnly();
+
     private AgentSwarmServer(string rootPath)
     {
         _rootPath = rootPath;
