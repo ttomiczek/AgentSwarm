@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "AgentSwarm.Runtime/1.0.0": {
+        "dependencies": {
+          "AgentSwarm.Contracts": "1.0.0",
+          "AgentSwarm.Core": "1.0.0"
+        },
+        "runtime": {
+          "AgentSwarm.Runtime.dll": {}
+        }
+      },
+      "AgentSwarm.Contracts/1.0.0": {
+        "runtime": {
+          "AgentSwarm.Contracts.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "AgentSwarm.Core/1.0.0": {
+        "runtime": {
+          "AgentSwarm.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AgentSwarm.Runtime/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AgentSwarm.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AgentSwarm.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

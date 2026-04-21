@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/AgentSwarm.Bridges.Telegram/AgentSwarm.Bridges.Telegram.csproj" />
+    <Project Path="src/AgentSwarm.Contracts/AgentSwarm.Contracts.csproj" />
+    <Project Path="src/AgentSwarm.Core/AgentSwarm.Core.csproj" />
+    <Project Path="src/AgentSwarm.Host/AgentSwarm.Host.csproj" />
+    <Project Path="src/AgentSwarm.Providers.OpenAi/AgentSwarm.Providers.OpenAi.csproj" />
+    <Project Path="src/AgentSwarm.Runtime/AgentSwarm.Runtime.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/AgentSwarm.Bridges.Telegram.UnitTests/AgentSwarm.Bridges.Telegram.UnitTests.csproj" />
+    <Project Path="tests/AgentSwarm.Core.UnitTests/AgentSwarm.Core.UnitTests.csproj" />
+    <Project Path="tests/AgentSwarm.Runtime.UnitTests/AgentSwarm.Runtime.UnitTests.csproj" />
+  </Folder>
+</Solution>

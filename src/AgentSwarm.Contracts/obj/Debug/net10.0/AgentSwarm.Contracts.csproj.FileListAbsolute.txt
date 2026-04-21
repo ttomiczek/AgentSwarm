@@ -1,0 +1,11 @@
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/bin/Debug/net10.0/AgentSwarm.Contracts.deps.json
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/bin/Debug/net10.0/AgentSwarm.Contracts.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/bin/Debug/net10.0/AgentSwarm.Contracts.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.AssemblyInfoInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.AssemblyInfo.cs
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.csproj.CoreCompileInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/refint/AgentSwarm.Contracts.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/AgentSwarm.Contracts.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Contracts/obj/Debug/net10.0/ref/AgentSwarm.Contracts.dll

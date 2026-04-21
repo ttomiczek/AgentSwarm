@@ -1,0 +1,15 @@
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/bin/Debug/net10.0/AgentSwarm.Providers.OpenAi.deps.json
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/bin/Debug/net10.0/AgentSwarm.Providers.OpenAi.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/bin/Debug/net10.0/AgentSwarm.Providers.OpenAi.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/bin/Debug/net10.0/AgentSwarm.Contracts.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/bin/Debug/net10.0/AgentSwarm.Contracts.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.csproj.AssemblyReference.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.GeneratedMSBuildEditorConfig.editorconfig
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.AssemblyInfoInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.AssemblyInfo.cs
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.csproj.CoreCompileInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwa.5136F43C.Up2Date
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/refint/AgentSwarm.Providers.OpenAi.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/AgentSwarm.Providers.OpenAi.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Providers.OpenAi/obj/Debug/net10.0/ref/AgentSwarm.Providers.OpenAi.dll

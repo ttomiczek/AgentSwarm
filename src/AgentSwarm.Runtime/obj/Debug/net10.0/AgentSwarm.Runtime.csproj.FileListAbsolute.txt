@@ -1,0 +1,17 @@
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Runtime.deps.json
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Runtime.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Runtime.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Contracts.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Core.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Core.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/bin/Debug/net10.0/AgentSwarm.Contracts.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.csproj.AssemblyReference.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.GeneratedMSBuildEditorConfig.editorconfig
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.AssemblyInfoInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.AssemblyInfo.cs
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.csproj.CoreCompileInputs.cache
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwa.23D5DA8E.Up2Date
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/refint/AgentSwarm.Runtime.dll
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/AgentSwarm.Runtime.pdb
+/root/dev/AgentSwarm/src/AgentSwarm.Runtime/obj/Debug/net10.0/ref/AgentSwarm.Runtime.dll
