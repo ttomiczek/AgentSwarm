@@ -1,6 +1,8 @@
 namespace AgentSwarm.Runtime;
 
 using AgentSwarm.Contracts;
+using AgentSwarm.Core.Config;
+using AgentSwarm.Providers.OpenAi;
 
 public class AgentSwarmServer
 {
@@ -28,7 +30,14 @@ public class AgentSwarmServer
         _agentFolders = FindAgentFolders(_rootPath).ToList();
         foreach (var folder in _agentFolders)
         {
-            var runtime = new AgentRuntime(folder);
+            var config = new ConfigScanner().Scan(folder);
+            var llm = new OpenAiLlmProvider(new HttpClient(), new LlmConfig(
+                config.Agent!.Provider,
+                config.Agent.BaseUrl,
+                config.Agent.ApiKey,
+                config.Agent.Model));
+            var tools = new ToolExecutor();
+            var runtime = new AgentRuntime(llm, tools, config.Role?.Content ?? "");
             _runtimes.Add(runtime);
         }
     }

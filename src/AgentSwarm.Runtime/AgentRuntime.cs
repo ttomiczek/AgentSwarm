@@ -3,42 +3,26 @@ namespace AgentSwarm.Runtime;
 using AgentSwarm.Contracts;
 using AgentSwarm.Core.Config;
 using AgentSwarm.Core.Queue;
-using AgentSwarm.Core.State;
-using AgentSwarm.Bridges.Telegram;
 using AgentSwarm.Providers.OpenAi;
 
 public class AgentRuntime : IAgentRuntime
 {
     private readonly ILlmProvider _llm;
     private readonly IToolExecutor _tools;
-    private readonly ITelegramBridge _bridge;
-    private readonly AgentStateMachine _state;
     private readonly LockedQueue<string> _queue;
     private readonly string _systemPrompt;
 
-    public AgentRuntime(string agentFolder)
-    {
-        var config = new ConfigScanner().Scan(agentFolder);
-        _llm = new OpenAiLlmProvider(new HttpClient(), ToLlmConfig(config.Agent!));
-        _tools = new ToolExecutor();
-        _bridge = new TelegramBridge(new HttpClient(), new TelegramConfig(config.Telegram!.BotToken));
-        _state = new AgentStateMachine();
-        _queue = new LockedQueue<string>();
-        _systemPrompt = config.Role?.Content ?? string.Empty;
-    }
+    private (AgentState State, DateTime Timestamp, string Text) _status =
+        (AgentState.Initializing, DateTime.UtcNow, "Initializing");
 
-    public AgentRuntime(
-        ILlmProvider llm,
-        IToolExecutor tools,
-        ITelegramBridge bridge,
-        DiscoveredConfig config)
+    public (AgentState State, DateTime Timestamp, string Text) Status => _status;
+
+    public AgentRuntime(ILlmProvider llm, IToolExecutor tools, string systemPrompt)
     {
         _llm = llm;
         _tools = tools;
-        _bridge = bridge;
-        _state = new AgentStateMachine();
         _queue = new LockedQueue<string>();
-        _systemPrompt = config.Role?.Content ?? string.Empty;
+        _systemPrompt = systemPrompt;
     }
 
     public void EnqueueUserInput(string input)
@@ -48,47 +32,31 @@ public class AgentRuntime : IAgentRuntime
 
     public async Task<string> ProcessAsync(string userInput, CancellationToken ct)
     {
-        if (!_state.TryTransition(AgentState.Processing))
-            return "Agent is busy.";
+        var inputs = _queue.DequeueAll();
+        var messages = new List<LlmMessage> { new("user", userInput) };
+        messages.AddRange(inputs.Select(i => new LlmMessage("user", i)));
 
-        try
+        var llmInput = new LlmInput(_systemPrompt, messages);
+        var fullResponse = new System.Text.StringBuilder();
+
+        await foreach (var chunk in _llm.StreamAsync(llmInput, ct))
         {
-            var inputs = _queue.DequeueAll();
-            var messages = new List<LlmMessage> { new("user", userInput) };
-            messages.AddRange(inputs.Select(i => new LlmMessage("user", i)));
-
-            var llmInput = new LlmInput(_systemPrompt, messages);
-            var fullResponse = new System.Text.StringBuilder();
-
-            await foreach (var chunk in _llm.StreamAsync(llmInput, ct))
+            if (IsToolCall(chunk, out var toolName, out var toolInput))
             {
-                if (IsToolCall(chunk, out var toolName, out var toolInput))
-                {
-                    await _bridge.SendMessageAsync("[tool call]", ct);
-                    _state.TryTransition(AgentState.ToolRunning);
-                    var result = await _tools.ExecuteAsync(
-                        new ToolCall(toolName, toolInput),
-                        ct);
-                    _state.TryTransition(AgentState.Processing);
-
-                    messages.Add(new LlmMessage("assistant", chunk));
-                    messages.Add(new LlmMessage("tool", result.OutputJson));
-                    var followUp = new LlmInput(_systemPrompt, messages);
-                    await foreach (var followUpChunk in _llm.StreamAsync(followUp, ct))
-                        fullResponse.Append(followUpChunk);
-                }
-                else
-                {
-                    fullResponse.Append(chunk);
-                }
+                var result = await _tools.ExecuteAsync(new ToolCall(toolName, toolInput), ct);
+                messages.Add(new LlmMessage("assistant", chunk));
+                messages.Add(new LlmMessage("tool", result.OutputJson));
+                var followUp = new LlmInput(_systemPrompt, messages);
+                await foreach (var followUpChunk in _llm.StreamAsync(followUp, ct))
+                    fullResponse.Append(followUpChunk);
             }
+            else
+            {
+                fullResponse.Append(chunk);
+            }
+        }
 
-            return fullResponse.ToString();
-        }
-        finally
-        {
-            _state.TryTransition(AgentState.Idle);
-        }
+        return fullResponse.ToString();
     }
 
     private static bool IsToolCall(string chunk, out string name, out string input)
@@ -99,22 +67,11 @@ public class AgentRuntime : IAgentRuntime
         try
         {
             using var doc = System.Text.Json.JsonDocument.Parse(chunk);
-            var root = doc.RootElement;
-            var tool = root.GetProperty("tool");
+            var tool = doc.RootElement.GetProperty("tool");
             name = tool.GetProperty("name").GetString() ?? "";
             input = tool.GetProperty("input").GetRawText();
             return true;
         }
         catch { return false; }
-    }
-
-    private static LlmConfig ToLlmConfig(AgentConfig agent)
-    {
-        return new LlmConfig(
-            agent.Provider,
-            agent.BaseUrl,
-            agent.ApiKey,
-            agent.Model
-        );
     }
 }
