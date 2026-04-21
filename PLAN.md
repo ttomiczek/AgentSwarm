@@ -17,13 +17,12 @@ AgentSwarm.sln (no solution file yet — projects exist individually)
 │   │   ├── ISkillRegistry.cs
 │   │   ├── ITelegramBridge.cs
 │   │   └── IToolExecutor.cs
-│   ├── AgentSwarm.Core/               # config + infrastructure
+│   ├── AgentSwarm.Core/               # config + infrastructure + server
 │   │   ├── Config/
 │   │   │   └── ConfigScanner.cs       # folder hierarchy scan
 │   │   ├── Queue/
 │   │   │   └── LockedQueue.cs         # thread-safe generic queue
-│   │   └── State/
-│   │       └── AgentStateMachine.cs   # Idle/Processing/ToolRunning
+│   │   └── AgentSwarmServer.cs        # central server: wires all components
 │   ├── AgentSwarm.Runtime/            # orchestration
 │   │   ├── AgentRuntime.cs            # wires LLM + tools + bridge
 │   │   └── ToolExecutor.cs            # registers & executes ToolBase
