@@ -1,7 +1,7 @@
 namespace AgentSwarm.Core.Config;
 
 public record DiscoveredConfig(
-    string AgentFolder,
+    string? AgentFolder,
     string? CompanyFolder,
     string? OrgFolder,
     AgentConfig? Agent,
@@ -26,9 +26,10 @@ public record TelegramConfig(
 
 public class ConfigScanner
 {
+    // Per design spec: scanner walks UP from agent folder, depth = segments below "agents" + 1
+    // Stop at first /agents/ ancestor (first "agents" folder found walking UP from startPath)
     public DiscoveredConfig Scan(string startPath)
     {
-        var searchDir = startPath;
         string? agentFolder = null;
         string? companyFolder = null;
         string? orgFolder = null;
@@ -36,70 +37,62 @@ public class ConfigScanner
         RoleConfig? role = null;
         TelegramConfig? telegram = null;
 
-        while (true)
+        var current = startPath;
+        while (current != null)
         {
-            var agentsDir = FindAncestor(searchDir, "agents");
-            if (agentsDir == null) break;
-
-            var dir = Path.GetDirectoryName(agentsDir)!;
-            var segments = agentsDir.Split(Path.DirectorySeparatorChar);
-
-            // Determine depth from /agents/
+            var segments = current.Split(Path.DirectorySeparatorChar);
             var agentsIdx = Array.IndexOf(segments, "agents");
-            var depth = segments.Length - agentsIdx - 1;
+            var depth = agentsIdx >= 0 ? (segments.Length - agentsIdx) : 1;
 
-            if (depth == 1)
+            if (depth >= 3 && agentFolder == null)
             {
-                orgFolder = agentsDir;
+                agentFolder = current;
+                break;
             }
-            else if (depth == 2)
+            else if (depth == 2 && companyFolder == null)
             {
-                companyFolder = agentsDir;
+                companyFolder = current;
+                break;
             }
-            else if (depth >= 3)
+            else if (depth == 1 && orgFolder == null)
             {
-                agentFolder = agentsDir;
-            }
-
-            if (agent == null)
-            {
-                var agentJson = Path.Combine(agentsDir, "agent.json");
-                if (File.Exists(agentJson))
-                    agent = AgentConfigLoader.FromFile(agentJson);
+                orgFolder = current;
+                break;
             }
 
-            if (role == null)
-            {
-                var roleMd = Path.Combine(agentsDir, "role.md");
-                if (File.Exists(roleMd))
-                    role = new RoleConfig(File.ReadAllText(roleMd));
-            }
-
-            if (telegram == null)
-            {
-                var telegramJson = Path.Combine(agentsDir, "telegram.json");
-                if (File.Exists(telegramJson))
-                    telegram = TelegramConfigLoader.FromFile(telegramJson);
-            }
-
-            searchDir = Path.GetDirectoryName(dir)!;
+            var parent = Directory.GetParent(current);
+            if (parent == null) break;
+            current = parent.FullName;
         }
 
-        return new DiscoveredConfig(agentFolder!, companyFolder, orgFolder, agent, role, telegram);
+        LoadConfigs(agentFolder, ref agent, ref role, ref telegram);
+        LoadConfigs(companyFolder, ref agent, ref role, ref telegram);
+        LoadConfigs(orgFolder, ref agent, ref role, ref telegram);
+
+        return new DiscoveredConfig(agentFolder, companyFolder, orgFolder, agent, role, telegram);
     }
 
-    static string? FindAncestor(string path, string target)
+    static void LoadConfigs(string? folder, ref AgentConfig? agent, ref RoleConfig? role, ref TelegramConfig? telegram)
     {
-        var dir = path;
-        while (dir != null)
+        if (folder == null) return;
+        if (agent == null)
         {
-            if (Path.GetFileName(dir) == target)
-                return dir;
-            var parent = Path.GetDirectoryName(dir);
-            if (parent == dir) break;
-            dir = parent;
+            var agentJson = Path.Combine(folder, "agent.json");
+            if (File.Exists(agentJson))
+                agent = AgentConfigLoader.FromFile(agentJson);
         }
-        return null;
+        if (role == null)
+        {
+            var roleMd = Path.Combine(folder, "role.md");
+            if (File.Exists(roleMd))
+                role = new RoleConfig(File.ReadAllText(roleMd));
+        }
+        if (telegram == null)
+        {
+            var telegramJson = Path.Combine(folder, "telegram.json");
+            if (File.Exists(telegramJson))
+                telegram = TelegramConfigLoader.FromFile(telegramJson);
+        }
     }
 }
 
