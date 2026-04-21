@@ -21,7 +21,7 @@ public class AgentRuntime : IAgentRuntime
         var config = new ConfigScanner().Scan(agentFolder);
         _llm = new OpenAiLlmProvider(new HttpClient(), ToLlmConfig(config.Agent!));
         _tools = new ToolExecutor();
-        _bridge = new TelegramBridge(new HttpClient(), config.Telegram!);
+        _bridge = new TelegramBridge(new HttpClient(), new TelegramConfig(config.Telegram!.BotToken));
         _state = new AgentStateMachine();
         _queue = new LockedQueue<string>();
         _systemPrompt = config.Role?.Content ?? string.Empty;
