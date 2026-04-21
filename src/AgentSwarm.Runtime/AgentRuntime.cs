@@ -11,7 +11,7 @@ public class AgentRuntime : IAgentRuntime
     private readonly IToolExecutor _tools;
     private readonly ITelegramBridge _bridge;
     private readonly AgentStateMachine _state;
-    private readonly InputQueue _queue;
+    private readonly LockedQueue<string> _queue;
     private readonly string _systemPrompt;
 
     public AgentRuntime(
@@ -24,7 +24,7 @@ public class AgentRuntime : IAgentRuntime
         _tools = tools;
         _bridge = bridge;
         _state = new AgentStateMachine();
-        _queue = new InputQueue();
+        _queue = new LockedQueue<string>();
         _systemPrompt = config.Role?.Content ?? string.Empty;
     }
 
