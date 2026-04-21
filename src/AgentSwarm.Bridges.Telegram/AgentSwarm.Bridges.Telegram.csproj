@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AgentSwarm.Contracts\AgentSwarm.Contracts.csproj" />
-    <ProjectReference Include="..\AgentSwarm.Runtime\AgentSwarm.Runtime.csproj" />
+    <ProjectReference Include="..\AgentSwarm.Core\AgentSwarm.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

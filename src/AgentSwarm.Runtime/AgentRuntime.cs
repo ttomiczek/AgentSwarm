@@ -4,6 +4,8 @@ using AgentSwarm.Contracts;
 using AgentSwarm.Core.Config;
 using AgentSwarm.Core.Queue;
 using AgentSwarm.Core.State;
+using AgentSwarm.Bridges.Telegram;
+using AgentSwarm.Providers.OpenAi;
 
 public class AgentRuntime : IAgentRuntime
 {
@@ -13,6 +15,17 @@ public class AgentRuntime : IAgentRuntime
     private readonly AgentStateMachine _state;
     private readonly LockedQueue<string> _queue;
     private readonly string _systemPrompt;
+
+    public AgentRuntime(string agentFolder)
+    {
+        var config = new ConfigScanner().Scan(agentFolder);
+        _llm = new OpenAiLlmProvider(new HttpClient(), ToLlmConfig(config.Agent!));
+        _tools = new ToolExecutor();
+        _bridge = new TelegramBridge(new HttpClient(), config.Telegram!);
+        _state = new AgentStateMachine();
+        _queue = new LockedQueue<string>();
+        _systemPrompt = config.Role?.Content ?? string.Empty;
+    }
 
     public AgentRuntime(
         ILlmProvider llm,
@@ -93,5 +106,15 @@ public class AgentRuntime : IAgentRuntime
             return true;
         }
         catch { return false; }
+    }
+
+    private static LlmConfig ToLlmConfig(AgentConfig agent)
+    {
+        return new LlmConfig(
+            agent.Provider,
+            agent.BaseUrl,
+            agent.ApiKey,
+            agent.Model
+        );
     }
 }

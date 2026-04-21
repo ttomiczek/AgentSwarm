@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <ProjectReference Include="..\AgentSwarm.Bridges.Telegram\AgentSwarm.Bridges.Telegram.csproj" />
     <ProjectReference Include="..\AgentSwarm.Core\AgentSwarm.Core.csproj" />
     <ProjectReference Include="..\AgentSwarm.Contracts\AgentSwarm.Contracts.csproj" />
+    <ProjectReference Include="..\AgentSwarm.Providers.OpenAi\AgentSwarm.Providers.OpenAi.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
