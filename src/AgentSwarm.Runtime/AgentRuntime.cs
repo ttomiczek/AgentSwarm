@@ -12,6 +12,8 @@ public class AgentRuntime : IAgentRuntime
 
     public (AgentState State, DateTime Timestamp, string Text) Status => _status;
 
+    public string Folder => _folder;
+
     public AgentRuntime(string agentFolder)
     {
         _folder = agentFolder;
