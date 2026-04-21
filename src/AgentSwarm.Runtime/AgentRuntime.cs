@@ -55,7 +55,6 @@ public class AgentRuntime : IAgentRuntime
                     _state.TryTransition(AgentState.ToolRunning);
                     var result = await _tools.ExecuteAsync(
                         new ToolCall(toolName, toolInput),
-                        GetType().Name,
                         ct);
                     _state.TryTransition(AgentState.Processing);
 

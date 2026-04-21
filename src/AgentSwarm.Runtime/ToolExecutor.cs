@@ -1,74 +1,81 @@
 namespace AgentSwarm.Runtime;
 
-using System.Diagnostics;
 using System.Text.Json;
 using AgentSwarm.Contracts;
 
 public class ToolExecutor : IToolExecutor
 {
-    public async Task<ToolResult> ExecuteAsync(ToolCall call, string agentContextFolder, CancellationToken ct)
+    private readonly Dictionary<string, ToolBase> _tools = new();
+    private readonly ILogger? _logger;
+
+    public ToolExecutor(ILogger? logger = null)
     {
+        _logger = logger;
+    }
+
+    public void RegisterTool(string name, ToolBase tool)
+    {
+        _tools[name] = tool;
+    }
+
+    public async Task<ToolResult> ExecuteAsync(ToolCall call, CancellationToken ct)
+    {
+        if (!_tools.TryGetValue(call.Name, out var tool))
+        {
+            _logger?.LogWarning("Tool not found: {Name}", call.Name);
+            return new ToolResult(call.Name, """{"error":"tool not found"}""", true);
+        }
+
         try
         {
-            var skillPath = Path.Combine(agentContextFolder, "skills", call.Name + ".md");
-            if (!File.Exists(skillPath))
-                return new ToolResult(call.Name, """{"error":"skill not found"}""", true);
-
-            var skillContent = await File.ReadAllTextAsync(skillPath, ct);
-            var toolSpec = ParseSkill(skillContent);
-
-            var input = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(call.InputJson)
-                ?? new Dictionary<string, JsonElement>();
-
-            var psi = new ProcessStartInfo
-            {
-                FileName = toolSpec.Executable,
-                Arguments = Interpolate(toolSpec.Args, input),
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false
-            };
-
-            using var process = Process.Start(psi);
-            if (process == null)
-                return new ToolResult(call.Name, """{"error":"process failed to start"}""", true);
-
-            var output = await process.StandardOutput.ReadToEndAsync(ct);
-            var error = await process.StandardError.ReadToEndAsync(ct);
-            await process.WaitForExitAsync(ct);
-
-            var result = string.IsNullOrEmpty(error) ? output : output + "\n" + error;
-            return new ToolResult(call.Name, result, process.ExitCode != 0);
+            var input = JsonSerializer.Deserialize<JsonElement>(call.InputJson);
+            var typedInput = DeserializeToType(input, tool.GetType());
+            var output = await tool.ExecuteAsync(typedInput, ct);
+            var outputJson = JsonSerializer.Serialize(output);
+            return new ToolResult(call.Name, outputJson, false);
         }
         catch (Exception ex)
         {
+            _logger?.LogError(ex, "Tool {Name} failed", call.Name);
             return new ToolResult(call.Name, JsonSerializer.Serialize(new { error = ex.Message }), true);
         }
     }
 
-    private static SkillSpec ParseSkill(string content)
+    private static object DeserializeToType(JsonElement input, Type targetType)
     {
-        var lines = content.Split('\n');
-        var exec = "";
-        var args = "";
-
-        foreach (var line in lines)
+        var target = Activator.CreateInstance(targetType)!;
+        foreach (var prop in targetType.GetProperties())
         {
-            if (line.StartsWith("executable: "))
-                exec = line["executable: ".Length..].Trim();
-            else if (line.StartsWith("args: "))
-                args = line["args: ".Length..].Trim();
+            if (input.TryGetProperty(prop.Name, out var value))
+            {
+                var converted = ConvertValue(value, prop.PropertyType);
+                prop.SetValue(target, converted);
+            }
         }
-
-        return new SkillSpec(exec, args);
+        return target;
     }
 
-    private static string Interpolate(string template, Dictionary<string, JsonElement> input)
+    private static object? ConvertValue(JsonElement value, Type targetType)
     {
-        foreach (var kvp in input)
-            template = template.Replace($"${kvp.Key}", kvp.Value.GetString() ?? "");
-        return template;
+        return targetType switch
+        {
+            var t when t == typeof(string) => value.GetString(),
+            var t when t == typeof(int) => value.GetInt32(),
+            var t when t == typeof(long) => value.GetInt64(),
+            var t when t == typeof(bool) => value.GetBoolean(),
+            var t when t == typeof(double) => value.GetDouble(),
+            _ => JsonSerializer.Deserialize(value.GetRawText(), targetType)
+        };
     }
 
-    private record SkillSpec(string Executable, string Args);
+    public IEnumerable<ToolSchema> GetAllSchemas()
+    {
+        return _tools.Values.Select(t => t.GetSchema());
+    }
+}
+
+public interface ILogger
+{
+    void LogWarning(string format, params object[] args);
+    void LogError(Exception ex, string format, params object[] args);
 }
